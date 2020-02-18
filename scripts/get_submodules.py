@@ -8,8 +8,6 @@ from utils.painter import paint
 DIR_NAME = "your_clone_rep"
 
 if __name__ == '__main__':
-    os.environ["user_name"] = "Ais105"
-    os.environ["user_password"] = "m123j54der"
     user = os.environ['user_name']
     password = os.environ['user_password']
 
