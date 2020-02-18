@@ -1,6 +1,6 @@
 import shutil, git, os
 from github import Github
-import plotly.graph_objects as go
+from utils.painter import paint
 
 if __name__ == '__main__':
     user = os.environ['user_name']
@@ -30,15 +30,4 @@ if __name__ == '__main__':
     sm = repo.submodules
     arr = [submodule.name for submodule in sm]
 
-    fig = go.Figure(data=[go.Table(
-        header=dict(values=[repository_name],
-                    line_color='white',
-                    fill_color='rgb(206, 153, 255)',
-                    align='center'),
-        cells=dict(values=[arr],
-                   line_color='white',
-                   fill_color='rgb(230, 204, 255)',
-                   align='center'))
-    ])
-    fig.update_layout(width=500, height=130000)
-    fig.show()
+    paint([repository_name], [arr], 500, 130000)

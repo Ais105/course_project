@@ -1,6 +1,6 @@
 import os
 from github import Github
-import plotly.graph_objects as go
+from utils.painter import paint
 
 if __name__ == '__main__':
     user = os.environ['user_name']
@@ -20,15 +20,5 @@ if __name__ == '__main__':
     tags_id_list = []
     for tag in tags:
         tags_id_list.append(tag.name)
-    fig = go.Figure(data=[go.Table(
-        header=dict(values=[repository_name],
-                    line_color='white',
-                    fill_color='rgb(206, 153, 255)',
-                    align='center'),
-        cells=dict(values=[tags_id_list],
-                   line_color='white',
-                   fill_color='rgb(230, 204, 255)',
-                   align='center'))
-    ])
-    fig.update_layout(width=500, height=1000)
-    fig.show()
+
+    paint([repository_name], [tags_id_list], 500, 1000)

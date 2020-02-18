@@ -1,6 +1,6 @@
 import os
 from github import Github
-import plotly.graph_objects as go
+from utils.painter import paint
 
 if __name__ == '__main__':
     print(os.environ['user_name'])
@@ -23,15 +23,4 @@ if __name__ == '__main__':
     commit_list = [file.filename for file in last.files]
     print("last change: ",commit_list)
 
-    fig = go.Figure(data=[go.Table(
-        header=dict(values=commits_name,
-                    line_color='white',
-                    fill_color='rgb(206, 153, 255)',
-                    align='center'),
-        cells=dict(values=[files_in_commits[name] for name in commits_name],  # 1nd column
-                   line_color='white',
-                   fill_color='rgb(230, 204, 255)',
-                   align='center'))
-    ])
-    fig.update_layout(width=10000, height=1000)
-    fig.show()
+    paint(commits_name, [files_in_commits[name] for name in commits_name], 10000, 1000)

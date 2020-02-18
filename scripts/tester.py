@@ -9,7 +9,7 @@
 """
 import shutil, git, os
 from github import Github
-import plotly.graph_objects as go
+from utils.painter import paint
 
 if __name__ == '__main__':
     user = os.environ['user_name']
@@ -19,19 +19,7 @@ if __name__ == '__main__':
 
     #get repos
     repositories = [repo.name for repo in g.get_user().get_repos()]
-    fig = go.Figure(data=[go.Table(
-        header=dict(values=[user.login],
-                    line_color='white',
-                    fill_color='rgb(206, 153, 255)',
-                    align='center'),
-        cells=dict(values=[repositories],
-                   line_color='white',
-                   fill_color='rgb(230, 204, 255)',
-                   align='center'))
-    ])
-    fig.update_layout(width=500, height=10000)
-    fig.show()
-
+    paint([user.login], [repositories], 500, 10000)
 
     #get all branches
     repository_name = input("Enter repo name: \n")
@@ -39,18 +27,7 @@ if __name__ == '__main__':
     if repository_name not in repositories:
         print("Input repository doesn't exist")
     branches = [branch.name for branch in g.get_user().get_repo(repository_name).get_branches()]
-    fig = go.Figure(data=[go.Table(
-        header=dict(values=[repository_name],
-                    line_color='white',
-                    fill_color='rgb(206, 153, 255)',
-                    align='center'),
-        cells=dict(values=[branches],
-                   line_color='white',
-                   fill_color='rgb(230, 204, 255)',
-                   align='center'))
-    ])
-    fig.update_layout(width=400, height=500)
-    fig.show()
+    paint([repository_name], [branches], 400, 500)
 
     r_name = input("Get repo for tags: \n")
     print("Get all tags in repo %s:" % r_name)
@@ -58,18 +35,7 @@ if __name__ == '__main__':
     tags_id_list = []
     for tag in tags:
         tags_id_list.append(tag.name)
-    fig = go.Figure(data=[go.Table(
-            header=dict(values=[r_name],
-                        line_color='white',
-                        fill_color='rgb(206, 153, 255)',
-                        align='center'),
-            cells=dict(values=[tags_id_list],
-                       line_color='white',
-                       fill_color='rgb(230, 204, 255)',
-                       align='center'))
-        ])
-    fig.update_layout(width=500, height=130000)
-    fig.show()
+    paint([r_name], [tags_id_list], 500, 130000)
 
     # commits_files
     print("Get all commits in repository %s:" % repository_name)
@@ -82,19 +48,7 @@ if __name__ == '__main__':
     commit_list = [file.filename for file in last.files]
     print("last change: ",commit_list)
 
-    fig = go.Figure(data=[go.Table(
-        header=dict(values=commits_name,
-                    line_color='white',
-                    fill_color='rgb(206, 153, 255)',
-                    align='center'),
-        cells=dict(values=[files_in_commits[name] for name in commits_name],  # 1nd column
-                   line_color='white',
-                   fill_color='rgb(230, 204, 255)',
-                   align='center'))
-    ])
-    fig.update_layout(width=10000, height=20000)
-    fig.show()
-
+    paint(commits_name, [files_in_commits[name] for name in commits_name], 10000, 20000)
 
     repo_name = input("Get repo for subs: \n")
     l = g.get_user().get_repo(repo_name).html_url
@@ -111,16 +65,4 @@ if __name__ == '__main__':
     sm = repo.submodules
     arr = [submodule.name for submodule in sm]
 
-    fig = go.Figure(data=[go.Table(
-        header=dict(values=[repo_name],
-                    line_color='white',
-                    fill_color='rgb(206, 153, 255)',
-                    align='center'),
-        cells=dict(values=[arr],
-                   line_color='white',
-                   fill_color='rgb(230, 204, 255)',
-                   align='center'))
-    ])
-    fig.update_layout(width=500, height=130000)
-    fig.show()
-
+    paint([repo_name], [arr], 500, 130000)
