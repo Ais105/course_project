@@ -7,56 +7,59 @@
     [ ] bags for changed files
 
 """
-import shutil, git, os
-from github import Github
+import git
+import os
+import shutil
+
+from github_client.client import GitHubClient
+
 from utils.painter import paint
 
 if __name__ == '__main__':
+    os.environ["user_name"] = "Ais105"
+    os.environ["user_password"] = "m123j54der"
     user = os.environ['user_name']
     password = os.environ['user_password']
-    g = Github(user,password)
-    user = g.get_user()
 
-    #get repos
-    repositories = [repo.name for repo in g.get_user().get_repos()]
+    client = GitHubClient(user, password)
+    client.connect()
+    user = client.get_user()
+
+    # get repositories
+    repositories = client.get_repositories()
     paint([user.login], [repositories], 500, 10000)
 
-    #get all branches
+    # get all branches name
     repository_name = input("Enter repo name: \n")
     print("Get all branches in repo %s:" % repository_name)
     if repository_name not in repositories:
         print("Input repository doesn't exist")
-    branches = [branch.name for branch in g.get_user().get_repo(repository_name).get_branches()]
-    paint([repository_name], [branches], 400, 500)
+    branches_name = client.get_branches_name(repository_name)
+    paint([repository_name], [branches_name], 400, 500)
 
-    r_name = input("Get repo for tags: \n")
-    print("Get all tags in repo %s:" % r_name)
-    tags = g.get_user().get_repo(repository_name).get_tags()
-    tags_id_list = []
-    for tag in tags:
-        tags_id_list.append(tag.name)
-    paint([r_name], [tags_id_list], 500, 130000)
+    # get all tags name
+    repository_name = input("Get repo for tags: \n")
+    print("Get all tags in repo %s:" % repository_name)
+    tag_names = client.get_tags_name(repository_name)
+    paint([repository_name], [tag_names], 500, 130000)
 
     # commits_files
     print("Get all commits in repository %s:" % repository_name)
-    rep_name = input("Get repo for commits: \n")
-    print("count of commits: ",g.get_user().get_repo(rep_name).get_commits().totalCount)
-    commits = g.get_user().get_repo(rep_name).get_commits()
-    files_in_commits = {commit.sha: [file.filename for file in commit.files] for commit in commits}
-    commits_name = list(files_in_commits.keys())
+    repository_name = input("Get repo for commits: \n")
+    print("count of commits: ", client.get_commits_count(repository_name))
+    commits = client.get_commits(repository_name)
+    files_in_commits = client.get_files_in_commits(commits)
+    commits_name = client.get_commits_name(files_in_commits)
     last = commits[0]
     commit_list = [file.filename for file in last.files]
-    print("last change: ",commit_list)
-
+    print("last change: ", commit_list)
     paint(commits_name, [files_in_commits[name] for name in commits_name], 10000, 20000)
 
-    repo_name = input("Get repo for subs: \n")
-    l = g.get_user().get_repo(repo_name).html_url
+    # get submodules
+    repository_name = input("Get repo for subs: \n")
+    repository_url = client.get_url_repository(repository_name)
     DIR_NAME = "your_clone_rep"
-    REMOTE_URL = (l + ".git")
-
-    if os.path.isdir(DIR_NAME):
-        shutil.rmtree(DIR_NAME)
+    REMOTE_URL = (repository_url + ".git")
     os.mkdir(DIR_NAME)
     repo = git.Repo.init(DIR_NAME)
     origin = repo.create_remote('origin', REMOTE_URL)
@@ -64,5 +67,7 @@ if __name__ == '__main__':
     origin.pull(origin.refs[0].remote_head)
     sm = repo.submodules
     arr = [submodule.name for submodule in sm]
+    if os.path.isdir(DIR_NAME):
+        shutil.rmtree(DIR_NAME)
 
-    paint([repo_name], [arr], 500, 130000)
+    paint([repository_name], [arr], 500, 130000)

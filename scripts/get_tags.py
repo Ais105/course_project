@@ -1,14 +1,16 @@
 import os
-from github import Github
+from github_client.client import GitHubClient
 from utils.painter import paint
 
 if __name__ == '__main__':
+    os.environ["user_name"] = "Ais105"
+    os.environ["user_password"] = "m123j54der"
     user = os.environ['user_name']
     password = os.environ['user_password']
 
-    g = Github(user,password)
-    user = g.get_user()
-    repositories = [repo.name for repo in g.get_user().get_repos()]
+    client = GitHubClient(user, password)
+    client.connect()
+    repositories = client.get_repositories()
     print(repositories)
 
     repository_name = input("Enter repo name: \n")
@@ -16,9 +18,6 @@ if __name__ == '__main__':
     if repository_name not in repositories:
         print("Input repository doesn't exist")
 
-    tags = g.get_user().get_repo(repository_name).get_tags()
-    tags_id_list = []
-    for tag in tags:
-        tags_id_list.append(tag.name)
+    tag_names = client.get_tags_name(repository_name)
 
-    paint([repository_name], [tags_id_list], 500, 1000)
+    paint([repository_name], [tag_names], 500, 1000)
