@@ -1,23 +1,12 @@
 import os
-from github import Github
-import plotly.graph_objects as go
+from github_client.client import GitHubClient
+from utils.painter import paint
 
 if __name__ == '__main__':
     user = os.environ['user_name']
     password = os.environ['user_password']
-    g = Github(user,password)
-    user = g.get_user()
-
-    repositories = [repo.name for repo in g.get_user().get_repos()]
-    fig = go.Figure(data=[go.Table(
-        header=dict(values=[user.login],
-                    line_color='white',
-                    fill_color='rgb(206, 153, 255)',
-                    align='center'),
-        cells=dict(values=[repositories],
-                   line_color='white',
-                   fill_color='rgb(230, 204, 255)',
-                   align='center'))
-    ])
-    fig.update_layout(width=500, height=10000)
-    fig.show()
+    client = GitHubClient(user, password)
+    client.connect()
+    repositories = client.get_repositories()
+    user = client.get_user()
+    paint([user.login], [repositories], 500, 10000)

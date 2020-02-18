@@ -1,28 +1,19 @@
 import os
-from github import Github
-import plotly.graph_objects as go
+from github_client.client import GitHubClient
+from utils.painter import paint
 
 if __name__ == '__main__':
     user = os.environ['user_name']
     password = os.environ['user_password']
-    g = Github(user,password)
-    user = g.get_user()
-    repositories = [repo.name for repo in g.get_user().get_repos()]
+    client = GitHubClient(user, password)
+    client.connect()
+    repositories = client.get_repositories()
     print(repositories)
-#get all branches
+
+    # get all branches
     repository_name = input("Enter repo name: \n")
     if repository_name not in repositories:
         print("Input repository doesn't exist")
-    branches = [branch.name for branch in g.get_user().get_repo(repository_name).get_branches()]
-    fig = go.Figure(data=[go.Table(
-        header=dict(values=[repository_name],
-                    line_color='white',
-                    fill_color='rgb(206, 153, 255)',
-                    align='center'),
-        cells=dict(values=[branches],
-                   line_color='white',
-                   fill_color='rgb(230, 204, 255)',
-                   align='center'))
-    ])
-    fig.update_layout(width=400, height=500)
-    fig.show()
+    branches_name = client.get_branches_name(repository_name)
+
+    paint([repository_name], [branches_name], 400, 500)
