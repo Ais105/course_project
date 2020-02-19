@@ -15,12 +15,10 @@
 
 Обязательным условием работы скриптов является наличие пакетного менеджера Pip.
 
-Для установки всех необходимых пакетов, представленных в requirements.txt используются команды:
+Для установки всех необходимых пакетов, представленных в requirements.txt используeтся командa:
 
 ```ShellSession
-$ pip install PyGithub
-$ pip install plotly
-$ pip install gitpython
+$ pip install -r requirements.txt
 ```
 
 Для запуска скриптов необходимо инициализировать git login и git password в переменных окружения 
